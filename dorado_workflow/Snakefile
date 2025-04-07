@@ -64,7 +64,7 @@ rule dorado_demux:
     threads: 1
     resources:
         mem_mb=8*1024, # guess work
-        runtime=12*60, # 12 hours - more than enough I think
+        runtime=24*60*2,
         gpus=1, # Possible it might work in CPU mode, but doesn't at least of the box.
     shell:
         "samtools merge -u - {input.bam_files} | {dorado} demux {params.options} --output-dir {output.outfolder} 2> {log}"
