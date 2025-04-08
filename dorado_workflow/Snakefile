@@ -38,7 +38,8 @@ rule dorado_basecaller:
         base_mods = "" if not config.get("base_mods") else "--modified-bases " + config["base_mods"],
         kit_name = config["kit_name"]
     output:
-        temp(join(outfolder, "basecalled", "{podfile}.bam"))
+        bamfile = temp(join(outfolder, "basecalled", "{podfile}.bam")),
+        done = temp(join(outfolder, "basecalled", "{podfile}.done")),
     log:
         join(outfolder, "logs", "{podfile}.log")
     threads: 6
@@ -47,11 +48,12 @@ rule dorado_basecaller:
         gpus=1,
         runtime=24*60*2
     shell:
-        "bash -c 'nvidia-smi 1>&2 && {dorado} basecaller {params.model} {input.pod5_file} {params.base_mods} --kit-name {params.kit_name} --models-directory {models_directory} > {output}' 2> {log}"
+        "bash -c 'nvidia-smi 1>&2 && {dorado} basecaller {params.model} {input.pod5_file} {params.base_mods} --kit-name {params.kit_name} --models-directory {models_directory} > {output.bamfile}' 2> {log} && touch {output.done}"
 
 rule dorado_demux:
     input:
-        bam_files = expand(join(outfolder, "basecalled/{pod_id}.bam"), pod_id=pod5_files["pod_id"])
+        bam_files = expand(join(outfolder, "basecalled/{pod_id}.bam"), pod_id=pod5_files["pod_id"]),
+        done = expand(join(outfolder, "basecalled/{pod_id}.done"), pod_id=pod5_files["pod_id"])
     params:
         options = "--no-classify",
     output:
