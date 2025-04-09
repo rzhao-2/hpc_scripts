@@ -11,7 +11,7 @@ conda install -c bioconda snakemake-executor-plugin-cluster-generic conda
 Then copy the config.yaml file to your working directory and edit the parameters as needed, then run the following command:
 
 ```
-snakemake --profile aqua --snakefile /work/microbiome/sw/hpc_scripts/dorado_workflow/Snakefile --configfile config.yaml
+snakemake --profile aqua --snakefile /work/microbiome/sw/hpc_scripts/dorado_workflow/Snakefile --configfile config.yaml --retries 3
 ```
 
 Improvements for the future:
